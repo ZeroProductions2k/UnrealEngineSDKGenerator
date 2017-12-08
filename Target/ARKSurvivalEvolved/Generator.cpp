@@ -394,7 +394,7 @@ struct FName
 		: ComparisonIndex(0),
 		  Number(0)
 	{
-		static std::set<size_t> cache;
+		static std::unordered_set<size_t> cache;
 
 		for (auto i : cache)
 		{

@@ -381,7 +381,7 @@ struct FName
 		: ComparisonIndex(0),
 		  Number(0)
 	{
-		static std::set<int> cache;
+		static std::unordered_set<int> cache;
 
 		for (auto i : cache)
 		{

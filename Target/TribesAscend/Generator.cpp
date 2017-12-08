@@ -265,7 +265,7 @@ struct FString : private TArray<wchar_t>
 
 	std::string ToString() const
 	{
-		auto length = std::wcslen(Data);
+		const auto length = std::wcslen(Data);
 
 		std::string str(length, '\0');
 
@@ -351,7 +351,7 @@ public:
 	{
 		if (IsWide())
 		{
-			auto length = std::wcslen(WideName);
+			const auto length = std::wcslen(WideName);
 
 			std::string str(length, '\0');
 
@@ -387,7 +387,7 @@ struct FName
 		: Index(0),
 		  Number(0)
 	{
-		static std::set<size_t> cache;
+		static std::unordered_set<size_t> cache;
 
 		for (auto i : cache)
 		{

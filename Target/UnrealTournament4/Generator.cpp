@@ -378,9 +378,9 @@ public:
 private:
 	inline ElementType const* const* GetItemPtr(int32_t Index) const
 	{
-		int32_t ChunkIndex = Index / ElementsPerChunk;
-		int32_t WithinChunkIndex = Index % ElementsPerChunk;
-		ElementType** Chunk = Chunks[ChunkIndex];
+		const auto ChunkIndex = Index / ElementsPerChunk;
+		const auto WithinChunkIndex = Index % ElementsPerChunk;
+		const auto Chunk = Chunks[ChunkIndex];
 		return Chunk + WithinChunkIndex;
 	}
 
@@ -425,7 +425,7 @@ struct FName
 		: ComparisonIndex(0),
 		  Number(0)
 	{
-		static std::set<int> cache;
+		static std::unordered_set<int> cache;
 
 		for (auto i : cache)
 		{
@@ -498,7 +498,7 @@ struct FString : private TArray<wchar_t>
 
 	std::string ToString() const
 	{
-		auto length = std::wcslen(Data);
+		const auto length = std::wcslen(Data);
 
 		std::string str(length, '\0');
 

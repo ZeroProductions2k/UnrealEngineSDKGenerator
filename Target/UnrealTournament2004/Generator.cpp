@@ -253,7 +253,7 @@ struct FString : private TArray<wchar_t>
 
 	std::string ToString() const
 	{
-		auto length = std::wcslen(Data);
+		const auto length = std::wcslen(Data);
 
 		std::string str(length, '\0');
 
@@ -307,7 +307,7 @@ struct FNameEntry
 	
 	std::string GetName()
 	{
-		auto length = std::wcslen(Data);
+		const auto length = std::wcslen(Data);
 
 		std::string str(length, '\0');
 
@@ -334,7 +334,7 @@ struct FName
 	FName(const char* nameToFind)
 		: Index(0)
 	{
-		static std::set<size_t> cache;
+		static std::unordered_set<size_t> cache;
 
 		for (auto i : cache)
 		{
