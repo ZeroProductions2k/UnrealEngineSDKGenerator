@@ -118,6 +118,9 @@
     <ClInclude Include="Engine\PatternFinder.hpp" />
     <ClInclude Include="Engine\tinyformat.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Target\Fortnite\PostProcess.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

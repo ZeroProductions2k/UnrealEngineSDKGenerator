@@ -97,4 +97,7 @@
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Target\Fortnite\PostProcess.txt" />
+  </ItemGroup>
 </Project>
