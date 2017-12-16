@@ -25,12 +25,9 @@ public:
 class FUObjectArray
 {
 public:
-	__int32 ObjFirstGCIndex; //0x0000
-	__int32 ObjLastNonGCIndex; //0x0004
-	__int32 MaxObjectsNotConsideredByGC; //0x0008
-	__int32 OpenForDisregardForGC; //0x000C
+	char UnknownData[0x390];
 
-	TUObjectArray ObjObjects; //0x0010
+	TUObjectArray ObjObjects; //0x0390
 };
 
 FUObjectArray* GlobalObjects = nullptr;
@@ -44,6 +41,7 @@ bool ObjectsStore::Initialize()
 	}
 
 	const auto offset = *reinterpret_cast<uint32_t*>(address + 3);
+
 	GlobalObjects = reinterpret_cast<decltype(GlobalObjects)>(address + 7 + offset);
 
 	return true;
