@@ -191,7 +191,7 @@ public:
 
 	std::string GetGameVersion() const override
 	{
-		return "1.6.4";
+		return "1.11";
 	}
 
 	std::string GetNamespaceName() const override
@@ -268,6 +268,7 @@ public:
 	}
 
 private:
+	char UnknownData00[0x390];
 	FUObjectItem* Objects;
 	int32_t MaxElements;
 	int32_t NumElements;
@@ -348,7 +349,22 @@ public:
 
 	inline const char* GetAnsiName() const
 	{
-		return AnsiName;
+		int seed = 0x9C5D6408;
+		static char buf[1024] = {};
+
+		buf[0] = AnsiName[0] ^ 8;
+		if (buf[0])
+		{
+			auto index = 0;
+			char c;
+			do
+			{
+				seed += ++index + 3;
+				c = seed ^ AnsiName[index];
+				buf[index] = c;
+			} while (c);
+		}
+		return buf;
 	}
 
 	inline const wchar_t* GetWideName() const
@@ -390,12 +406,14 @@ private:
 		ChunkTableSize = (MaxTotalElements + ElementsPerChunk - 1) / ElementsPerChunk
 	};
 
+	char UnknownData00[8];
 	ElementType** Chunks[ChunkTableSize];
+	char UnknownData01[8];
 	int32_t NumElements;
 	int32_t NumChunks;
 };
 
-using TNameEntryArray = TStaticIndirectArrayThreadSafeRead<FNameEntry, 2 * 1024 * 1024, 16384>;
+using TNameEntryArray = TStaticIndirectArrayThreadSafeRead<FNameEntry, 3 * 1024 * 1024, 16384>;
 
 struct FName
 {
