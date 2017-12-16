@@ -72,12 +72,14 @@ private:
 		ChunkTableSize = (MaxTotalElements + ElementsPerChunk - 1) / ElementsPerChunk
 	};
 
+	char UnknownData[8];
 	ElementType** Chunks[ChunkTableSize];
+	char UnknownData2[8];
 	__int32 NumElements;
 	__int32 NumChunks;
 };
 
-using TNameEntryArray = TStaticIndirectArrayThreadSafeRead<FNameEntry, 2 * 1024 * 1024, 16384>;
+using TNameEntryArray = TStaticIndirectArrayThreadSafeRead<FNameEntry, 3 * 1024 * 1024, 16384>;
 
 TNameEntryArray* GlobalNames = nullptr;
 
