@@ -1,0 +1,4 @@
+1. Remove PF_MAX in FN_CoreUObject_structs.hpp
+2. Rename member "FuseTimer@Spawn" in class AB_Prj_Ranged_GrenadeLauncher_Athena_C in FN_B_Proj_Athena_Bandage_classes.hpp
+3. Rename member "FuseTimer@Spawn" in class AB_Prj_Ranged_GrenadeLauncher_Snowball_Athena_C in FN_B_Prj_Ranged_GrenadeLauncher_Snowball_Athena_classes.hpp
+4. Rename parameter "TArray<int>* int1" in class URenderToTextureFunctionLibrary_C in FN_RenderToTextureFunctionLibrary_classes.hpp
