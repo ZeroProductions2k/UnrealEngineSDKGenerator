@@ -17,9 +17,25 @@ public:
 		wchar_t WideName[1024];
 	};
 
-	const char* GetName() const
+	std::string GetName() const
 	{
-		return AnsiName;
+		int seed = 0x9C5D6408;
+		char buf[1024] = {};
+
+		buf[0] = AnsiName[0] ^ 8;
+		if (buf[0])
+		{
+			auto index = 0;
+			char c;
+			do
+			{
+				seed += ++index + 3;
+				c = seed ^ AnsiName[index];
+				buf[index] = c;
+			} while (c);
+		}
+
+		return buf;
 	}
 };
 
@@ -67,13 +83,14 @@ TNameEntryArray* GlobalNames = nullptr;
 
 bool NamesStore::Initialize()
 {
-	const auto address = FindPattern(GetModuleHandleW(L"FortniteClient-Win64-Shipping.exe"), reinterpret_cast<const unsigned char*>("\x48\x89\x1D\x00\x00\x00\x00\x48\x8B\x5C\x24\x00\x48\x83\xC4\x28\xC3\x48\x8B\x5C\x24\x00\x48\x89\x05\x00\x00\x00\x00\x48\x83\xC4\x28\xC3"), "xxx????xxxx?xxxxxxxxx?xxx????xxxxx");
+	const auto address = FindPattern(GetModuleHandleW(L"FortniteClient-Win64-Shipping.exe"), reinterpret_cast<const unsigned char*>("\x48\x8B\x35\x00\x00\x00\x00\x4C\x89\xAC\x24\x00\x00\x00\x00\x48"), "xxx????xxxx????x");
 	if (address == -1)
 	{
 		return false;
 	}
 
 	const auto offset = *reinterpret_cast<uint32_t*>(address + 3);
+
 	GlobalNames = reinterpret_cast<decltype(GlobalNames)>(*reinterpret_cast<uintptr_t*>(address + 7 + offset));
 
 	return true;
