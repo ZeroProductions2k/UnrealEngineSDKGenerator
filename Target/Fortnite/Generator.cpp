@@ -268,7 +268,6 @@ public:
 	}
 
 private:
-	char UnknownData00[0x390];
 	FUObjectItem* Objects;
 	int32_t MaxElements;
 	int32_t NumElements;
@@ -277,11 +276,9 @@ private:
 class FUObjectArray
 {
 public:
-	int32_t ObjFirstGCIndex;
-	int32_t ObjLastNonGCIndex;
-	int32_t MaxObjectsNotConsideredByGC;
-	int32_t OpenForDisregardForGC;
-	TUObjectArray ObjObjects;
+	char UnknownData[0x390];
+
+	TUObjectArray ObjObjects; //0x0390
 };
 
 template<class T>
