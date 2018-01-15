@@ -2,7 +2,6 @@
 
 #include "PatternFinder.hpp"
 #include "NamesStore.hpp"
-
 #include "EngineClasses.hpp"
 
 class FNameEntry
@@ -67,14 +66,35 @@ TNameEntryArray* GlobalNames = nullptr;
 
 bool NamesStore::Initialize()
 {
-	const auto address = FindPattern(GetModuleHandleW(nullptr), reinterpret_cast<const unsigned char*>("\x48\x89\x1D\x00\x00\x00\x00\x48\x8B\x5C\x24\x00\x48\x83\xC4\x28\xC3\x48\x8B\x5C\x24\x00\x48\x89\x05\x00\x00\x00\x00\x48\x83\xC4\x28\xC3"), "xxx????xxxx?xxxxxxxxx?xxx????xxxxx");
+	// PUBG Pointer decryption
+	// thx to Jeffeeee @ unknowncheats.me
+
+	auto address = FindPattern(GetModuleHandleW(nullptr), reinterpret_cast<const unsigned char*>("\xE8\x00\x00\x00\x00\x0F\xB7\xC0\x48\x8B\xCF\x48\x8B\x1C\xC7\xE8\x00\x00\x00\x00\x48\x33\xC3\x48\x8B\xC8"), "x????xxxxxxxxxxx????xxxxxx");
 	if (address == -1)
 	{
 		return false;
 	}
 
-	const auto offset = *reinterpret_cast<uint32_t*>(address + 3);
-	GlobalNames = reinterpret_cast<decltype(GlobalNames)>(*reinterpret_cast<uintptr_t*>(address + 7 + offset));
+	auto offset = *reinterpret_cast<int32_t*>(address + 0x01);
+	auto Decrypt1 = reinterpret_cast<uintptr_t(*)(void*)>(address + 0x05 + offset);
+
+	offset = *reinterpret_cast<int32_t*>(address + 0x10);
+	auto Decrypt2 = reinterpret_cast<uintptr_t(*)(void*)>(address + 0x14 + offset);
+
+	address = FindPattern(GetModuleHandleW(nullptr), reinterpret_cast<const unsigned char*>("\x49\x8D\x1C\xC4\xE8\x00\x00\x00\x00\x48\x33\x03\x75\x5E"), "xxxxx????xxxxx");
+	if (address == -1)
+	{
+		return false;
+	}
+
+	offset = *reinterpret_cast<int32_t*>(address - 0x30);
+
+	uintptr_t* pEncryptedPtr = reinterpret_cast<uintptr_t*>(address - 0x2C + offset);
+
+	uintptr_t Xor1 = pEncryptedPtr[Decrypt1(pEncryptedPtr)];
+	uintptr_t Xor2 = Decrypt2(pEncryptedPtr);
+
+	GlobalNames = reinterpret_cast<decltype(GlobalNames)>(Xor1 ^ Xor2);
 
 	return true;
 }
