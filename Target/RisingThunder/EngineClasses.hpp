@@ -4,6 +4,8 @@
 #include <string>
 #include <windows.h>
 
+class UProperty;
+
 struct FPointer
 {
 	uintptr_t Dummy;
@@ -210,9 +212,16 @@ class UStruct : public UField
 {
 public:
 	UStruct * SuperField;
-	UField* Children;
+	UField *Children;
 	int32_t PropertySize;
-	char UnknownData00[0x4C];
+	int32_t MinAlignment;
+	TArray<unsigned char> Script;
+	UProperty* PropertyLink;
+	UProperty* RefLink;
+	UProperty* DestructorLink;
+	UProperty* PostConstructLink;
+	UProperty* RollbackLink;
+	TArray<UObject *> ScriptObjectReferences;
 };
 
 class UScriptStruct : public UStruct
@@ -224,24 +233,57 @@ public:
 class UFunction : public UStruct
 {
 public:
-	__int32 FunctionFlags; //0x0088
-	__int16 RepOffset; //0x008C
-	__int8 NumParms; //0x008E
-	__int16 ParmsSize; //0x0090
-	__int16 ReturnValueOffset; //0x0092
-	__int16 RPCId; //0x0094
-	__int16 RPCResponseId; //0x0096
-	class UProperty* FirstPropertyToInit; //0x0098
-	UFunction* EventGraphFunction; //0x00A0
-	__int32 EventGraphCallOffset; //0x00A8
-	char UnknownData00[0x4]; //0x00AC
-	void* Func; //0x00B0
+	uint32_t FunctionFlags;
+	uint16_t RepOffset;
+	char NumParms;
+	uint16_t ParmsSize;
+	uint16_t ReturnValueOffset;
+	uint16_t RPCId;
+	uint16_t RPCResponseId;
+	UProperty* FirstPropertyToInit;
+	UFunction* EventGraphFunction;
+	__int32 EventGraphCallOffset;
+	void* Func;
+};
+
+struct FRepRecord
+{
+	UProperty *Property;
+	int Index;
+};
+
+struct FGCReferenceTokenStream
+{
+	TArray<unsigned int> Tokens;
+};
+
+struct __declspec(align(4)) FImplementedInterface
+{
+	UClass *Class;
+	int PointerOffset;
+	bool bImplementedByK2;
 };
 
 class UClass : public UStruct
 {
 public:
-	char UnknownData00[0x198]; //0x0088
+	void(__fastcall *ClassConstructor)(void*);
+	UObject *(__fastcall *ClassVTableHelperCtorCaller)(void*);
+	void(__fastcall *ClassAddReferencedObjects)(UObject *, void*);
+	int32_t ClassUnique;
+	uint32_t ClassFlags;
+	uint64_t ClassCastFlags;
+	UClass *ClassWithin;
+	UObject *ClassGeneratedBy;
+	FName ClassConfigName;
+	bool bCooked;
+	TArray<FRepRecord> ClassReps;
+	TArray<UField *> NetFields;
+	UObject *ClassDefaultObject;
+	void* FuncMap;
+	TArray<FImplementedInterface> Interfaces;
+	FGCReferenceTokenStream ReferenceTokenStream;
+	TArray<void*> NativeFunctionLookupTable;
 };
 
 class UProperty : public UField

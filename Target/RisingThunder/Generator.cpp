@@ -17,13 +17,13 @@ public:
 		};
 
 		virtualFunctionPattern["Class CoreUObject.Object"] = {
-			{ "\x45\x33\xF6\x4D\x8B\xE0", "xxxxxx", 0x200, R"(	inline void ProcessEvent(class UFunction* function, void* parms)
+			{ "\x40\x55\x56\x57\x41\x54\x41\x55\x41\x56\x41\x57\x48\x81\xEC\x00\x00\x00\x00\x48\x8D\x6C\x24\x00\x48\xC7\x45\x00\x00\x00\x00\x00", "xxxxxxxxxxxxxxx????xxxx?xxx?????", 0x200, R"(	inline void ProcessEvent(class UFunction* function, void* parms)
 	{
 		return GetVFunction<void(*)(UObject*, class UFunction*, void*)>(this, %d)(this, function, parms);
 	})" }
 		};
 		virtualFunctionPattern["Class CoreUObject.Class"] = {
-			{ "\x4C\x8B\xDC\x57\x48\x81\xEC", "xxxxxxx", 0x200, R"(	inline UObject* CreateDefaultObject()
+			{ "\x48\x8B\xC4\x56\x57\x41\x56\x48\x81\xEC\x00\x00\x00\x00\x48\xC7\x44\x24\x00\x00\x00\x00\x00\x48\x89\x58\x10\x48\x89\x68\x18\x48\x8B\x05\x00\x00\x00\x00", "xxxxxxxxxx????xxxx?????xxxxxxxxxxx????", 0x200, R"(	inline UObject* CreateDefaultObject()
 	{
 		return GetVFunction<UObject*(*)(UClass*)>(this, %d)(this);
 	})" }
@@ -41,14 +41,20 @@ public:
 			{ "FUObjectArray*", "GObjects" }
 		};
 		predefinedMembers["Class CoreUObject.Field"] = {
-			{ "char", "UnknownData00[0x08]" },
 			{ "class UField*", "Next" }
 		};
 		predefinedMembers["Class CoreUObject.Struct"] = {
 			{ "class UStruct*", "SuperField" },
 			{ "class UField*", "Children" },
 			{ "int32_t", "PropertySize" },
-			{ "char", "UnknownData00[0x4C]" }
+		{"int32_t", "MinAlignment"},
+		{"TArray<unsigned char>", "Script"},
+		{"void*", "PropertyLink"},
+		{"void*", "RefLink"},
+		{ "void*", "DestructorLink" },
+		{ "void*", "PostConstructLink" },
+		{ "void*", "RollbackLink" },
+		{ "TArray<UObject*>", "ScriptObjectReferences" },
 		};
 		predefinedMembers["Class CoreUObject.Function"] = {
 			{ "int32_t", "FunctionFlags" },
@@ -545,7 +551,9 @@ public:
 
 struct FText
 {
-	char UnknownData[0x18];
+	void* DisplayString;
+	void* History;
+	int Flags;
 };
 
 struct FScriptDelegate
