@@ -69,7 +69,7 @@ std::vector<std::string> UEEnum::GetNames() const
 
 	for (auto i = 0; i < names.Num(); ++i)
 	{
-		buffer.push_back(NamesStore().GetById(names[i].ComparisonIndex));
+		buffer.push_back(NamesStore().GetById(names[i].Key.ComparisonIndex));
 	}
 
 	return buffer;
@@ -160,12 +160,12 @@ size_t UEProperty::GetElementSize() const
 //---------------------------------------------------------------------------
 UEPropertyFlags UEProperty::GetPropertyFlags() const
 {
-	return static_cast<UEPropertyFlags>(static_cast<UProperty*>(object)->PropertyFlags.A);
+	return static_cast<UEPropertyFlags>(static_cast<UProperty*>(object)->PropertyFlags);
 }
 //---------------------------------------------------------------------------
 size_t UEProperty::GetOffset() const
 {
-	return static_cast<UProperty*>(object)->Offset;
+	return static_cast<UProperty*>(object)->Offset_Internal;
 }
 //---------------------------------------------------------------------------
 UEClass UEProperty::StaticClass()
@@ -550,7 +550,7 @@ UEProperty::Info UEArrayProperty::GetInfo() const
 
 		return Info::Create(PropertyType::Container, sizeof(TArray<void*>), false, "TArray<" + generator->GetOverrideType(inner.CppType) + ">");
 	}
-	
+
 	return { PropertyType::Unknown };
 }
 //---------------------------------------------------------------------------

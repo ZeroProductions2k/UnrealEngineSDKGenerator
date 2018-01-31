@@ -123,7 +123,9 @@ public:
 
 struct FText
 {
-	char UnknownData[0x18];
+	void* DisplayString;
+	void* History;
+	int Flags;
 };
 
 struct FWeakObjectPtr
@@ -193,16 +195,15 @@ public:
 class UField : public UObject
 {
 public:
-	char UnknownData00[0x08];
-	UField* Next;
+	UField * Next;
 };
 
 class UEnum : public UField
 {
 public:
 	FString CppType;
-	TArray<FName> Names;
-	__int64 CppForm;
+	TArray<TPair<FName, unsigned char>> Names;
+	__int32 CppForm;
 };
 
 class UStruct : public UField
@@ -248,11 +249,15 @@ class UProperty : public UField
 public:
 	__int32 ArrayDim;
 	__int32 ElementSize;
-	FQWord PropertyFlags;
-	__int32 PropertySize;
-	char UnknownData00[0x08];
-	__int32 Offset;
-	char UnknownData01[0x20];
+	unsigned __int64 PropertyFlags;
+	unsigned __int16 RepIndex;
+	FName RepNotifyFunc;
+	__int32 Offset_Internal;
+	UProperty *PropertyLinkNext;
+	UProperty *NextRef;
+	UProperty *DestructorLinkNext;
+	UProperty *PostConstructLinkNext;
+	UProperty *RollbackLinkNext;
 };
 
 class UNumericProperty : public UProperty
