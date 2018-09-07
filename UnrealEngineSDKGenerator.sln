@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnrealTournament4", "UnrealTournament4.vcxproj", "{8421CC8C-A3DB-4F2F-9672-4DDAA9C9D391}"
 EndProject
@@ -32,6 +32,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Fortnite", "Fortnite.vcxproj", "{42AFB8A2-F17E-4EEA-94E6-ABC8B7886DA4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlayerunknownsBattlegrounds", "PlayerunknownsBattlegrounds.vcxproj", "{C9338E0E-7CCC-4256-AE59-B1B1CEF6CCE5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RisingThunder", "RisingThunder.vcxproj", "{42249133-0B8C-42AE-8DEA-B487806075C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,8 +133,17 @@ Global
 		{C9338E0E-7CCC-4256-AE59-B1B1CEF6CCE5}.Release|x64.ActiveCfg = Release|x64
 		{C9338E0E-7CCC-4256-AE59-B1B1CEF6CCE5}.Release|x64.Build.0 = Release|x64
 		{C9338E0E-7CCC-4256-AE59-B1B1CEF6CCE5}.Release|x86.ActiveCfg = Release|x64
+		{42249133-0B8C-42AE-8DEA-B487806075C6}.Debug|x64.ActiveCfg = Debug|x64
+		{42249133-0B8C-42AE-8DEA-B487806075C6}.Debug|x64.Build.0 = Debug|x64
+		{42249133-0B8C-42AE-8DEA-B487806075C6}.Debug|x86.ActiveCfg = Debug|x64
+		{42249133-0B8C-42AE-8DEA-B487806075C6}.Release|x64.ActiveCfg = Release|x64
+		{42249133-0B8C-42AE-8DEA-B487806075C6}.Release|x64.Build.0 = Release|x64
+		{42249133-0B8C-42AE-8DEA-B487806075C6}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9895A11E-7576-4E71-9FEF-EB7CAC4A33A5}
 	EndGlobalSection
 EndGlobal

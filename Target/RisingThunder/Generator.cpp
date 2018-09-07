@@ -17,13 +17,13 @@ public:
 		};
 
 		virtualFunctionPattern["Class CoreUObject.Object"] = {
-			{ "\x45\x33\xF6\x3B\x05\x00\x00\x00\x00\x4D\x8B\xE0", "xxxxx????xxx", 0x200, R"(	inline void ProcessEvent(class UFunction* function, void* parms)
+			{ "\x40\x55\x56\x57\x41\x54\x41\x55\x41\x56\x41\x57\x48\x81\xEC\x00\x00\x00\x00\x48\x8D\x6C\x24\x00\x48\xC7\x45\x00\x00\x00\x00\x00", "xxxxxxxxxxxxxxx????xxxx?xxx?????", 0x200, R"(	inline void ProcessEvent(class UFunction* function, void* parms)
 	{
 		return GetVFunction<void(*)(UObject*, class UFunction*, void*)>(this, %d)(this, function, parms);
 	})" }
 		};
 		virtualFunctionPattern["Class CoreUObject.Class"] = {
-			{ "\x4C\x8B\xDC\x57\x48\x81\xEC", "xxxxxxx", 0x200, R"(	inline UObject* CreateDefaultObject()
+			{ "\x48\x8B\xC4\x56\x57\x41\x56\x48\x81\xEC\x00\x00\x00\x00\x48\xC7\x44\x24\x00\x00\x00\x00\x00\x48\x89\x58\x10\x48\x89\x68\x18\x48\x8B\x05\x00\x00\x00\x00", "xxxxxxxxxx????xxxx?????xxxxxxxxxxx????", 0x200, R"(	inline UObject* CreateDefaultObject()
 	{
 		return GetVFunction<UObject*(*)(UClass*)>(this, %d)(this);
 	})" }
@@ -47,8 +47,14 @@ public:
 			{ "class UStruct*", "SuperField" },
 			{ "class UField*", "Children" },
 			{ "int32_t", "PropertySize" },
-			{ "int32_t", "MinAlignment" },
-			{ "unsigned char", "UnknownData0x0048[0x40]" }
+		{"int32_t", "MinAlignment"},
+		{"TArray<unsigned char>", "Script"},
+		{"void*", "PropertyLink"},
+		{"void*", "RefLink"},
+		{ "void*", "DestructorLink" },
+		{ "void*", "PostConstructLink" },
+		{ "void*", "RollbackLink" },
+		{ "TArray<UObject*>", "ScriptObjectReferences" },
 		};
 		predefinedMembers["Class CoreUObject.Function"] = {
 			{ "int32_t", "FunctionFlags" },
@@ -103,7 +109,7 @@ public:
 	{
 		return name;
 	}
-	
+
 	return name.substr(pos + 1);
 })"),
 			PredefinedMethod::Default("std::string GetFullName() const", R"(std::string UObject::GetFullName() const
@@ -132,12 +138,12 @@ public:
 		for (int i = 0; i < GetGlobalObjects().Num(); ++i)
 		{
 			auto object = GetGlobalObjects().GetByIndex(i);
-	
+
 			if (object == nullptr)
 			{
 				continue;
 			}
-	
+
 			if (object->GetFullName() == name)
 			{
 				return static_cast<T*>(object);
@@ -180,17 +186,17 @@ public:
 
 	std::string GetGameName() const override
 	{
-		return "PlayerUnknown's Battlegrounds";
+		return "Rising Thunder";
 	}
 
 	std::string GetGameNameShort() const override
 	{
-		return "PUBG";
+		return "RT";
 	}
 
 	std::string GetGameVersion() const override
 	{
-		return "3.6.4.10";
+		return "Build 9001";
 	}
 
 	std::string GetNamespaceName() const override
@@ -211,76 +217,6 @@ inline Fn GetVFunction(const void *instance, std::size_t index)
 	auto vtable = *reinterpret_cast<const void***>(const_cast<void*>(instance));
 	return reinterpret_cast<Fn>(vtable[index]);
 }
-
-class UObject;
-
-class FUObjectItem
-{
-public:
-	UObject* Object;
-	int32_t Flags;
-	int32_t ClusterIndex;
-	int32_t SerialNumber;
-
-	enum class ObjectFlags : int32_t
-	{
-		None = 0,
-		Native = 1 << 25,
-		Async = 1 << 26,
-		AsyncLoading = 1 << 27,
-		Unreachable = 1 << 28,
-		PendingKill = 1 << 29,
-		RootSet = 1 << 30,
-		NoStrongReference = 1 << 31
-	};
-
-	inline bool IsUnreachable() const
-	{
-		return !!(Flags & static_cast<std::underlying_type_t<ObjectFlags>>(ObjectFlags::Unreachable));
-	}
-	inline bool IsPendingKill() const
-	{
-		return !!(Flags & static_cast<std::underlying_type_t<ObjectFlags>>(ObjectFlags::PendingKill));
-	}
-};
-
-class TUObjectArray
-{
-public:
-	inline int32_t Num() const
-	{
-		return NumElements;
-	}
-
-	inline UObject* GetByIndex(int32_t index) const
-	{
-		return Objects[index].Object;
-	}
-
-	inline FUObjectItem* GetItemByIndex(int32_t index) const
-	{
-		if (index < NumElements)
-		{
-			return &Objects[index];
-		}
-		return nullptr;
-	}
-
-private:
-	FUObjectItem* Objects;
-	int32_t MaxElements;
-	int32_t NumElements;
-};
-
-class FUObjectArray
-{
-public:
-	int32_t ObjFirstGCIndex;
-	int32_t ObjLastNonGCIndex;
-	int32_t MaxObjectsNotConsideredByGC;
-	int32_t OpenForDisregardForGC;
-	TUObjectArray ObjObjects;
-};
 
 template<class T>
 struct TArray
@@ -314,10 +250,35 @@ public:
 		return i < Num();
 	}
 
+	inline void Add(T InputData)
+	{
+		Data = (T*)realloc(Data, sizeof(T) * (Count + 1));
+		Data[Count++] = InputData;
+		Max = Count;
+	};
+
+	inline void Clear()
+	{
+		free(Data);
+		Count = Max = 0;
+	};
+
 private:
 	T* Data;
 	int32_t Count;
 	int32_t Max;
+};
+
+class UObject;
+
+class FUObjectArray
+{
+public:
+	int32_t ObjFirstGCIndex;
+	int32_t ObjLastNonGCIndex;
+	int32_t OpenForDisregardForGC;
+
+	TStaticIndirectArrayThreadSafeRead<UObject, 8388608, 16384> ObjObjects;
 };
 
 class FNameEntry
@@ -327,7 +288,6 @@ public:
 	static const auto NAME_INDEX_SHIFT = 1;
 
 	int32_t Index;
-	char UnknownData00[0x04];
 	FNameEntry* HashNext;
 	union
 	{
@@ -406,6 +366,7 @@ struct FName
 			int32_t Number;
 		};
 
+		// DO NOT REMOVE: needed for memory alignment! biggest member is now uint64_t
 		uint64_t CompositeComparisonValue;
 	};
 
@@ -432,7 +393,7 @@ struct FName
 			if (!std::strcmp(GetGlobalNames()[i]->GetAnsiName(), nameToFind))
 			{
 				ComparisonIndex = i;
-				
+
 				return;
 			}
 		}
@@ -590,12 +551,14 @@ public:
 
 struct FText
 {
-	char UnknownData[0x18];
+	void* DisplayString;
+	void* History;
+	int Flags;
 };
 
 struct FScriptDelegate
 {
-	char UnknownData[14];
+	char UnknownData[20];
 };
 
 struct FScriptMulticastDelegate
@@ -692,13 +655,11 @@ struct FStringAssetReference_
 
 class FAssetPtr : public TPersistentObjectPtr<FStringAssetReference_>
 {
-
 };
 
 template<typename ObjectType>
 class TAssetPtr : FAssetPtr
 {
-
 };
 
 struct FUniqueObjectGuid_
@@ -708,13 +669,11 @@ struct FUniqueObjectGuid_
 
 class FLazyObjectPtr : public TPersistentObjectPtr<FUniqueObjectGuid_>
 {
-
 };
 
 template<typename ObjectType>
 class TLazyObjectPtr : FLazyObjectPtr
 {
-
 };)";
 	}
 
